@@ -1,5 +1,37 @@
-(()=>{'use strict';const C=window.EAI_CONFIG,$=id=>document.getElementById(id);let photoData=[];const fields=['reporter','phone','province','district','subdistrict','village','lat','lng','accuracy','cellId','hazard','flood','damage','need','status','urgency','note'];function init(){$('province').value=C.PROVINCE;$('district').value=C.DISTRICT;$('subdistrict').value=C.SUBDISTRICT;$('projectLabel').textContent=`${C.PROJECT_CODE} • ${C.SUBDISTRICT}`;$('gpsBtn').onclick=getGPS;$('photos').onchange=handlePhotos;$('submitBtn').onclick=submitReport;$('saveDraftBtn').onclick=saveDraft;$('clearBtn').onclick=clearForm;$('healthBtn').onclick=testHealth;restoreDraft();updateNetwork();addEventListener('online',updateNetwork);addEventListener('offline',updateNetwork);if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{})}function updateNetwork(){const o=navigator.onLine,b=$('networkBadge');b.textContent=o?'Online':'Offline';b.className=`badge ${o?'online':'offline'}`}function getGPS(){if(!navigator.geolocation)return setResult('อุปกรณ์นี้ไม่รองรับ GPS',false);$('gpsStatus').textContent='กำลังอ่านตำแหน่ง...';navigator.geolocation.getCurrentPosition(p=>{$('lat').value=p.coords.latitude.toFixed(7);$('lng').value=p.coords.longitude.toFixed(7);$('accuracy').value=`${Math.round(p.coords.accuracy)} เมตร`;$('gpsStatus').textContent='อ่านตำแหน่งสำเร็จ'},e=>$('gpsStatus').textContent=`อ่าน GPS ไม่สำเร็จ: ${e.message}`,{enableHighAccuracy:true,timeout:15000,maximumAge:30000})}async function handlePhotos(e){const fs=[...e.target.files].slice(0,C.MAX_PHOTOS);photoData=[];$('previewGrid').innerHTML='';for(const f of fs){const d=await compressImage(f,C.MAX_IMAGE_WIDTH,C.JPEG_QUALITY);photoData.push({dataUrl:d,name:f.name,mimeType:'image/jpeg'});const w=document.createElement('div');w.className='preview-item';w.innerHTML=`<img src="${d}" alt=""><span>${f.name}</span>`;$('previewGrid').appendChild(w)}}function compressImage(file,maxWidth,q){return new Promise((res,rej)=>{const r=new FileReader;r.onerror=rej;r.onload=()=>{const i=new Image;i.onerror=rej;i.onload=()=>{const s=Math.min(1,maxWidth/i.width),c=document.createElement('canvas');c.width=Math.max(1,Math.round(i.width*s));c.height=Math.max(1,Math.round(i.height*s));c.getContext('2d').drawImage(i,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',q))};i.src=r.result};r.readAsDataURL(file)})}function payload(){const note=[$('note').value.trim(),$('village').value.trim()?`จุดสังเกต: ${$('village').value.trim()}`:'',`hazard=${$('hazard').value}`,`urgency=${$('urgency').value}`,$('reporter').value.trim()?`reporter=${$('reporter').value.trim()}`:'',$('phone').value.trim()?`phone=${$('phone').value.trim()}`:''].filter(Boolean).join('
-');return{project_code:C.PROJECT_CODE,province:$('province').value.trim(),district:$('district').value.trim(),subdistrict:$('subdistrict').value.trim(),cell_id:$('cellId').value.trim(),lat:$('lat').value.trim(),lng:$('lng').value.trim(),flood:$('flood').value,damage:$('damage').value,need:$('need').value,status:$('status').value,note,device:JSON.stringify({app:'EAIV4-Mobile',version:C.APP_VERSION,userAgent:navigator.userAgent}),photos:photoData}}async function submitReport(){const p=payload();if(!p.lat||!p.lng)return setResult('กรุณาอ่าน GPS หรือกรอกพิกัด',false);if(!p.note)return setResult('กรุณากรอกรายละเอียด',false);if(!navigator.onLine){saveDraft();return setResult('ไม่มีอินเทอร์เน็ต เก็บร่างไว้แล้ว',false)}const b=$('submitBtn');b.disabled=true;b.textContent='กำลังส่ง...';try{const r=await fetch(C.API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p),redirect:'follow'}),t=await r.text();let d;try{d=JSON.parse(t)}catch{throw Error('API ตอบกลับไม่ใช่ JSON')}if(!d.ok)throw Error(d.message||'บันทึกไม่สำเร็จ');localStorage.removeItem('eai_mobile_draft');setResult(`ส่งสำเร็จ
-แถวที่ ${d.row_number}
-รูป ${d.photo_count||0} รูป`,true)}catch(e){saveDraft();setResult(`ส่งไม่สำเร็จ: ${e.message}
-เก็บร่างไว้แล้ว`,false)}finally{b.disabled=false;b.textContent='📤 ส่งรายงาน'}}function saveDraft(){const d={};fields.forEach(id=>d[id]=$(id).value);d.savedAt=new Date().toISOString();localStorage.setItem('eai_mobile_draft',JSON.stringify(d));setResult('เก็บร่างแล้ว',true)}function restoreDraft(){try{const r=localStorage.getItem('eai_mobile_draft');if(!r)return;const d=JSON.parse(r);fields.forEach(id=>{if(d[id]!==undefined)$(id).value=d[id]});setResult('กู้คืนร่างเดิมแล้ว',true)}catch{}}function clearForm(){if(!confirm('ล้างข้อมูลทั้งหมดหรือไม่?'))return;fields.forEach(id=>{const e=$(id);e.tagName==='SELECT'?e.selectedIndex=0:e.value=''});$('province').value=C.PROVINCE;$('district').value=C.DISTRICT;$('subdistrict').value=C.SUBDISTRICT;$('flood').value='0';photoData=[];$('photos').value='';$('previewGrid').innerHTML='';localStorage.removeItem('eai_mobile_draft');$('resultBox').className='result hidden'}async function testHealth(){$('healthOutput').textContent='กำลังทดสอบ...';try{const r=await fetch(`${C.API_URL}?action=health`,{cache:'no-store'});$('healthOutput').textContent=JSON.stringify(await r.json(),null,2)}catch(e){$('healthOutput').textContent=`ERROR: ${e.message}`}}function setResult(m,ok){const b=$('resultBox');b.textContent=m;b.className=`result ${ok?'success':'error'}`}document.addEventListener('DOMContentLoaded',init)})();
+function payload() {
+  const note = [
+    $('note').value.trim(),
+    $('village').value.trim()
+      ? `จุดสังเกต: ${$('village').value.trim()}`
+      : '',
+    `hazard=${$('hazard').value}`,
+    `urgency=${$('urgency').value}`,
+    $('reporter').value.trim()
+      ? `reporter=${$('reporter').value.trim()}`
+      : '',
+    $('phone').value.trim()
+      ? `phone=${$('phone').value.trim()}`
+      : ''
+  ].filter(Boolean).join('\n');
+
+  return {
+    project_code: C.PROJECT_CODE,
+    province: $('province').value.trim(),
+    district: $('district').value.trim(),
+    subdistrict: $('subdistrict').value.trim(),
+    cell_id: $('cellId').value.trim(),
+    lat: $('lat').value.trim(),
+    lng: $('lng').value.trim(),
+    flood: $('flood').value,
+    damage: $('damage').value,
+    need: $('need').value,
+    status: $('status').value,
+    note,
+    device: JSON.stringify({
+      app: 'EAIV4-Mobile',
+      version: C.APP_VERSION,
+      userAgent: navigator.userAgent
+    }),
+    photos: photoData
+  };
+}
