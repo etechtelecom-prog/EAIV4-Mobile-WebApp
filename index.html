@@ -4,18 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#071a33">
-  <meta name="description" content="EAIV4 Field Operations Mobile">
+  <meta name="description" content="EAI Mobile Field Operations Platform">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css?v=200">
-  <title>EAIV4 Field Operations</title>
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css?v=300">
+  <title>EAI Mobile | Field Operations</title>
 </head>
 <body>
   <header class="app-header">
     <div class="brand-mark">EAI</div>
     <div class="brand-copy">
-      <h1>EAIV4 Field Operations</h1>
-      <p>Disaster • Environment • Smart Waste</p>
+      <h1>EAI Mobile</h1>
+      <p>Earth Alert Intelligence • Field Operations</p>
     </div>
     <span id="networkBadge" class="badge">Checking...</span>
   </header>
@@ -23,179 +23,107 @@
   <main class="container">
     <section class="hero card">
       <div>
+        <span class="eyebrow">EAIV4 • VERSION 3</span>
         <h2>ศูนย์ปฏิบัติการภาคสนามบนมือถือ</h2>
-        <p>ลดการพิมพ์ ใช้ GPS กล้อง รายการเลือก และส่งข้อมูลเข้าสู่ EAIV4</p>
+        <p>บันทึกสถานการณ์ด้วย GPS กล้อง และแบบฟอร์มภาคสนาม แล้วส่งเข้าสู่ระบบ EAIV4</p>
       </div>
-      <div class="project-pill" id="projectLabel"></div>
+      <div class="hero-actions">
+        <div class="project-pill" id="projectLabel"></div>
+        <a class="dashboard-link" href="dashboard/">เปิด Dashboard</a>
+      </div>
     </section>
 
-    <section class="module-grid">
-      <button class="module active" data-module="incident">🚨<span>รายงานเหตุ</span></button>
-      <button class="module" data-module="waste">♻️<span>ขยะอัจฉริยะ</span></button>
-      <button class="module" data-module="environment">🌿<span>สิ่งแวดล้อม</span></button>
-      <button class="module" data-module="sync">🔄<span>คิวรอส่ง</span></button>
+    <section class="module-grid" aria-label="โมดูลหลัก">
+      <button class="module active" data-module="incident"><span class="module-icon">🚨</span><span>รายงานเหตุ</span><small>ภัยพิบัติและเหตุฉุกเฉิน</small></button>
+      <button class="module" data-module="waste"><span class="module-icon">♻️</span><span>ขยะอัจฉริยะ</span><small>ขยะล้นและจุดทิ้ง</small></button>
+      <button class="module" data-module="environment"><span class="module-icon">🌿</span><span>สิ่งแวดล้อม</span><small>น้ำ อากาศ และมลพิษ</small></button>
+      <button class="module" data-module="sync"><span class="module-icon">🔄</span><span>คิวรอส่ง</span><small>งานที่บันทึกแบบ Offline</small></button>
     </section>
 
-    <section class="card" id="incidentPanel">
+    <section class="card form-card" id="incidentPanel">
       <div class="step-head">
-        <h3>รายงานสถานการณ์ภาคสนาม</h3>
-        <span class="step-badge">Pilot V2.0</span>
+        <div><span class="eyebrow dark">FIELD REPORT</span><h3>รายงานสถานการณ์ภาคสนาม</h3></div>
+        <span class="step-badge">V3.0</span>
       </div>
 
-      <div class="wizard">
-        <button class="step active" data-step="1">1 พื้นที่</button>
-        <button class="step" data-step="2">2 GPS</button>
-        <button class="step" data-step="3">3 เหตุการณ์</button>
-        <button class="step" data-step="4">4 รูปภาพ</button>
-        <button class="step" data-step="5">5 ส่ง</button>
+      <div class="wizard" aria-label="ขั้นตอนกรอกข้อมูล">
+        <button class="step active" data-step="1"><b>1</b><span>พื้นที่</span></button>
+        <button class="step" data-step="2"><b>2</b><span>GPS</span></button>
+        <button class="step" data-step="3"><b>3</b><span>เหตุการณ์</span></button>
+        <button class="step" data-step="4"><b>4</b><span>รูปภาพ</span></button>
+        <button class="step" data-step="5"><b>5</b><span>ส่ง</span></button>
       </div>
 
       <div class="step-page active" data-page="1">
+        <div class="section-intro"><h4>ข้อมูลผู้รายงานและพื้นที่</h4><p>กรอกข้อมูลที่จำเป็นสำหรับติดตามและประสานงาน</p></div>
         <div class="grid two">
-          <label>ชื่อผู้รายงาน
-            <input id="reporter" autocomplete="name" placeholder="ชื่อ-นามสกุล">
-          </label>
-          <label>เบอร์โทร
-            <input id="phone" inputmode="tel" placeholder="08xxxxxxxx">
-          </label>
-          <label>จังหวัด
-            <input id="province">
-          </label>
-          <label>อำเภอ
-            <input id="district">
-          </label>
-          <label>ตำบล
-            <input id="subdistrict">
-          </label>
-          <label>หมู่บ้าน/จุดสังเกต
-            <input id="village" placeholder="เช่น บ้านมะรุ่ย">
-          </label>
+          <label>ชื่อผู้รายงาน<input id="reporter" autocomplete="name" placeholder="ชื่อ-นามสกุล"></label>
+          <label>เบอร์โทร<input id="phone" inputmode="tel" placeholder="08xxxxxxxx"></label>
+          <label>จังหวัด<input id="province"></label>
+          <label>อำเภอ<input id="district"></label>
+          <label>ตำบล<input id="subdistrict"></label>
+          <label>หมู่บ้าน/จุดสังเกต<input id="village" placeholder="เช่น บ้านมะรุ่ย"></label>
         </div>
       </div>
 
       <div class="step-page" data-page="2">
+        <div class="section-intro"><h4>ตำแหน่งภาคสนาม</h4><p>ใช้ GPS ของอุปกรณ์ หรือกรอกพิกัดด้วยตนเอง</p></div>
         <button type="button" id="gpsBtn" class="primary wide">📍 ใช้ตำแหน่งปัจจุบัน</button>
         <div class="grid two">
-          <label>Latitude<input id="lat" inputmode="decimal"></label>
-          <label>Longitude<input id="lng" inputmode="decimal"></label>
+          <label>Latitude<input id="lat" inputmode="decimal" placeholder="7.1234567"></label>
+          <label>Longitude<input id="lng" inputmode="decimal" placeholder="99.1234567"></label>
           <label>Cell ID<input id="cellId" placeholder="ถ้ามี"></label>
           <label>ความแม่นยำ GPS<input id="accuracy" readonly placeholder="-"></label>
         </div>
-        <p id="gpsStatus" class="hint">ยังไม่ได้อ่านตำแหน่ง</p>
+        <p id="gpsStatus" class="hint status-hint">ยังไม่ได้อ่านตำแหน่ง</p>
       </div>
 
       <div class="step-page" data-page="3">
+        <div class="section-intro"><h4>รายละเอียดสถานการณ์</h4><p>เลือกประเภทเหตุ ระดับผลกระทบ และความต้องการเร่งด่วน</p></div>
         <div class="grid two">
-          <label>ประเภทภารกิจ
-            <select id="missionType">
-              <option value="disaster">ภัยพิบัติ</option>
-              <option value="waste">ขยะ</option>
-              <option value="environment">สิ่งแวดล้อม</option>
-            </select>
-          </label>
-          <label>ประเภทเหตุ
-            <select id="hazard">
-              <option value="flood">น้ำท่วม</option>
-              <option value="landslide">ดินถล่ม</option>
-              <option value="storm">พายุ/ลมแรง</option>
-              <option value="fire">ไฟไหม้</option>
-              <option value="waste_overflow">ขยะล้น</option>
-              <option value="illegal_dumping">ทิ้งขยะผิดกฎหมาย</option>
-              <option value="water_pollution">น้ำเสีย/มลพิษน้ำ</option>
-              <option value="air_pollution">มลพิษอากาศ</option>
-              <option value="other">อื่น ๆ</option>
-            </select>
-          </label>
-          <label>ระดับน้ำท่วม (เมตร)
-            <input id="flood" type="number" min="0" max="30" step="0.1" value="0">
-          </label>
-          <label>ความเสียหาย
-            <select id="damage">
-              <option value="none">ไม่มี</option>
-              <option value="low">เล็กน้อย</option>
-              <option value="medium">ปานกลาง</option>
-              <option value="critical">รุนแรง</option>
-              <option value="destroyed">เสียหายทั้งหมด</option>
-            </select>
-          </label>
-          <label>ความช่วยเหลือ
-            <select id="need">
-              <option value="none">ยังไม่ต้องการ</option>
-              <option value="food_water">อาหารและน้ำ</option>
-              <option value="medicine">ยา/เวชภัณฑ์</option>
-              <option value="evacuation">อพยพ</option>
-              <option value="rescue">กู้ภัย</option>
-              <option value="waste_collection">จัดเก็บขยะ</option>
-              <option value="environment_inspection">ตรวจสอบสิ่งแวดล้อม</option>
-            </select>
-          </label>
-          <label>สถานะ
-            <select id="status">
-              <option value="pending">รอตรวจสอบ</option>
-              <option value="watch">เฝ้าระวัง</option>
-              <option value="warning">เตือนภัย</option>
-              <option value="need_help">ต้องการความช่วยเหลือ</option>
-              <option value="critical">วิกฤติ</option>
-            </select>
-          </label>
-          <label>ความเร่งด่วน
-            <select id="urgency">
-              <option value="normal">ปกติ</option>
-              <option value="urgent">เร่งด่วน</option>
-              <option value="immediate">ทันที</option>
-            </select>
-          </label>
-          <label>ปริมาณขยะโดยประมาณ (กก.)
-            <input id="wasteKg" type="number" min="0" step="1" value="0">
-          </label>
+          <label>ประเภทภารกิจ<select id="missionType"><option value="disaster">ภัยพิบัติ</option><option value="waste">ขยะ</option><option value="environment">สิ่งแวดล้อม</option></select></label>
+          <label>ประเภทเหตุ<select id="hazard"><option value="flood">น้ำท่วม</option><option value="landslide">ดินถล่ม</option><option value="storm">พายุ/ลมแรง</option><option value="fire">ไฟไหม้</option><option value="waste_overflow">ขยะล้น</option><option value="illegal_dumping">ทิ้งขยะผิดกฎหมาย</option><option value="water_pollution">น้ำเสีย/มลพิษน้ำ</option><option value="air_pollution">มลพิษอากาศ</option><option value="other">อื่น ๆ</option></select></label>
+          <label>ระดับน้ำท่วม (เมตร)<input id="flood" type="number" min="0" max="30" step="0.1" value="0"></label>
+          <label>ความเสียหาย<select id="damage"><option value="none">ไม่มี</option><option value="low">เล็กน้อย</option><option value="medium">ปานกลาง</option><option value="critical">รุนแรง</option><option value="destroyed">เสียหายทั้งหมด</option></select></label>
+          <label>ความช่วยเหลือ<select id="need"><option value="none">ยังไม่ต้องการ</option><option value="food_water">อาหารและน้ำ</option><option value="medicine">ยา/เวชภัณฑ์</option><option value="evacuation">อพยพ</option><option value="rescue">กู้ภัย</option><option value="waste_collection">จัดเก็บขยะ</option><option value="environment_inspection">ตรวจสอบสิ่งแวดล้อม</option></select></label>
+          <label>สถานะ<select id="status"><option value="pending">รอตรวจสอบ</option><option value="watch">เฝ้าระวัง</option><option value="warning">เตือนภัย</option><option value="need_help">ต้องการความช่วยเหลือ</option><option value="critical">วิกฤติ</option></select></label>
+          <label>ความเร่งด่วน<select id="urgency"><option value="normal">ปกติ</option><option value="urgent">เร่งด่วน</option><option value="immediate">ทันที</option></select></label>
+          <label>ปริมาณขยะโดยประมาณ (กก.)<input id="wasteKg" type="number" min="0" step="1" value="0"></label>
         </div>
-        <label>รายละเอียด
-          <textarea id="note" rows="4" placeholder="บอกสิ่งที่เกิดขึ้น ความต้องการ และจุดสังเกต"></textarea>
-        </label>
+        <label class="full-label">รายละเอียด<textarea id="note" rows="5" placeholder="บอกสิ่งที่เกิดขึ้น ความต้องการ และจุดสังเกต"></textarea></label>
       </div>
 
       <div class="step-page" data-page="4">
-        <input id="photos" type="file" accept="image/*" capture="environment" multiple>
-        <p class="hint">ถ่ายหรือเลือกรูปได้สูงสุด 4 รูป ระบบจะลดขนาดก่อนส่ง</p>
+        <div class="section-intro"><h4>ภาพถ่ายภาคสนาม</h4><p>ถ่ายหรือเลือกรูปสูงสุด 4 รูป ระบบจะลดขนาดก่อนส่ง</p></div>
+        <label class="upload-box" for="photos"><span>📷</span><strong>แตะเพื่อถ่ายหรือเลือกรูป</strong><small>JPG / PNG • สูงสุด 4 รูป</small></label>
+        <input id="photos" class="file-input" type="file" accept="image/*" capture="environment" multiple>
         <div id="previewGrid" class="preview-grid"></div>
       </div>
 
       <div class="step-page" data-page="5">
+        <div class="section-intro"><h4>ตรวจสอบและส่งรายงาน</h4><p>ตรวจสอบข้อมูลก่อนส่งเข้าสู่ศูนย์ปฏิบัติการ</p></div>
         <div class="summary-box" id="summaryBox">กรอกข้อมูลแล้วกดตรวจสอบ</div>
-        <div class="actions">
-          <button type="button" id="saveDraftBtn" class="secondary">💾 เก็บร่าง</button>
-          <button type="button" id="clearBtn" class="danger-outline">ล้างข้อมูล</button>
-          <button type="button" id="submitBtn" class="primary">📤 ส่งรายงาน</button>
-        </div>
+        <div class="actions"><button type="button" id="saveDraftBtn" class="secondary">💾 เก็บร่าง</button><button type="button" id="clearBtn" class="danger-outline">ล้างข้อมูล</button><button type="button" id="submitBtn" class="primary">📤 ส่งรายงาน</button></div>
         <div id="resultBox" class="result hidden"></div>
       </div>
 
-      <div class="wizard-nav">
-        <button type="button" id="prevBtn" class="secondary">← ย้อนกลับ</button>
-        <button type="button" id="nextBtn" class="primary">ถัดไป →</button>
-      </div>
+      <div class="wizard-nav"><button type="button" id="prevBtn" class="secondary">← ย้อนกลับ</button><button type="button" id="nextBtn" class="primary">ถัดไป →</button></div>
     </section>
 
     <section class="card hidden" id="queuePanel">
-      <div class="step-head">
-        <h3>คิวรอส่งและรายงานของฉัน</h3>
-        <button id="syncBtn" class="primary">Sync ตอนนี้</button>
-      </div>
+      <div class="step-head"><div><span class="eyebrow dark">OFFLINE QUEUE</span><h3>คิวรอส่งและรายงานของฉัน</h3></div><button id="syncBtn" class="primary">Sync ตอนนี้</button></div>
       <div id="queueList" class="queue-list"></div>
     </section>
 
-    <section class="card small">
-      <div class="section-title-row">
-        <h3>สถานะระบบ</h3>
-        <button type="button" id="healthBtn" class="link-button">ทดสอบ API</button>
-      </div>
+    <section class="card system-card">
+      <div class="section-title-row"><div><span class="eyebrow dark">SYSTEM</span><h3>สถานะการเชื่อมต่อ</h3></div><button type="button" id="healthBtn" class="link-button">ทดสอบ API</button></div>
       <pre id="healthOutput">ยังไม่ได้ทดสอบ</pre>
     </section>
   </main>
 
-  <footer>EAI Earth Alert Intelligence • EAIV4 Field Operations v2.0</footer>
-
-  <script src="config.js?v=200"></script>
-  <script src="app.js?v=200"></script>
+  <footer><strong>EAI Mobile</strong><span>Earth Alert Intelligence • EAIV4 Field Operations v3.0</span></footer>
+  <script src="config.js?v=300"></script>
+  <script src="app.js?v=300"></script>
+  <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(console.warn));}</script>
 </body>
 </html>

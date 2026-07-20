@@ -1,18 +1,1 @@
-{
-  "name": "EAIV4 Field Operations",
-  "short_name": "EAIV4 Field",
-  "description": "Field operations for disaster, environment and smart waste",
-  "start_url": "./",
-  "scope": "./",
-  "display": "standalone",
-  "background_color": "#f3f7fb",
-  "theme_color": "#071a33",
-  "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
-  ]
-}
+{"name":"EAI Mobile Field Operations","short_name":"EAI Mobile","start_url":"./","display":"standalone","background_color":"#eef4fa","theme_color":"#071a33","description":"EAIV4 mobile field reporting platform","icons":[{"src":"assets/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
