@@ -1,1 +1,76 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>EAIV4 Operations Dashboard</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="dashboard.css?v=300">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>EAIV4 Operations Dashboard</h1>
+      <p>Field reports • GPS • Photos • Situation overview</p>
+    </div>
+    <div class="status-wrap">
+      <span id="apiStatus" class="badge waiting">กำลังเชื่อมต่อ</span>
+      <button id="refreshBtn" type="button">รีเฟรช</button>
+    </div>
+  </header>
 
+  <main>
+    <section class="cards">
+      <article><span>รายงานทั้งหมด</span><strong id="totalCount">0</strong></article>
+      <article><span>ต้องการความช่วยเหลือ</span><strong id="helpCount">0</strong></article>
+      <article><span>สถานะวิกฤต</span><strong id="criticalCount">0</strong></article>
+      <article><span>รายงานที่มีรูป</span><strong id="photoCount">0</strong></article>
+    </section>
+
+    <section class="filters">
+      <input id="searchInput" type="search" placeholder="ค้นหา จังหวัด อำเภอ ตำบล รายละเอียด">
+      <select id="statusFilter">
+        <option value="">ทุกสถานะ</option>
+      </select>
+      <select id="needFilter">
+        <option value="">ทุกความต้องการ</option>
+      </select>
+    </section>
+
+    <section class="layout">
+      <div id="map" aria-label="แผนที่รายงานภาคสนาม"></div>
+      <aside id="detailPanel" class="detail-panel">
+        <h2>รายละเอียดรายงาน</h2>
+        <p class="muted">คลิกหมุดบนแผนที่หรือรายการด้านล่าง</p>
+      </aside>
+    </section>
+
+    <section class="table-card">
+      <div class="table-title">
+        <h2>รายการรายงานล่าสุด</h2>
+        <span id="lastUpdated" class="muted"></span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>เวลา</th>
+              <th>พื้นที่</th>
+              <th>พิกัด</th>
+              <th>ความเสียหาย</th>
+              <th>ความต้องการ</th>
+              <th>สถานะ</th>
+              <th>รูป</th>
+            </tr>
+          </thead>
+          <tbody id="reportRows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="config.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
