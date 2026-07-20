@@ -2,200 +2,75 @@
 <html lang="th">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#071a33">
-  <meta name="description" content="EAIV4 Field Operations Mobile">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css?v=200">
-  <title>EAIV4 Field Operations</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>EAIV4 Operations Dashboard</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="app-header">
-    <div class="brand-mark">EAI</div>
-    <div class="brand-copy">
-      <h1>EAIV4 Field Operations</h1>
-      <p>Disaster • Environment • Smart Waste</p>
+  <header class="topbar">
+    <div>
+      <h1>EAIV4 Operations Dashboard</h1>
+      <p>Field reports • GPS • Photos • Situation overview</p>
     </div>
-    <span id="networkBadge" class="badge">Checking...</span>
+    <div class="status-wrap">
+      <span id="apiStatus" class="badge waiting">กำลังเชื่อมต่อ</span>
+      <button id="refreshBtn" type="button">รีเฟรช</button>
+    </div>
   </header>
 
-  <main class="container">
-    <section class="hero card">
-      <div>
-        <h2>ศูนย์ปฏิบัติการภาคสนามบนมือถือ</h2>
-        <p>ลดการพิมพ์ ใช้ GPS กล้อง รายการเลือก และส่งข้อมูลเข้าสู่ EAIV4</p>
-      </div>
-      <div class="project-pill" id="projectLabel"></div>
+  <main>
+    <section class="cards">
+      <article><span>รายงานทั้งหมด</span><strong id="totalCount">0</strong></article>
+      <article><span>ต้องการความช่วยเหลือ</span><strong id="helpCount">0</strong></article>
+      <article><span>สถานะวิกฤต</span><strong id="criticalCount">0</strong></article>
+      <article><span>รายงานที่มีรูป</span><strong id="photoCount">0</strong></article>
     </section>
 
-    <section class="module-grid">
-      <button class="module active" data-module="incident">🚨<span>รายงานเหตุ</span></button>
-      <button class="module" data-module="waste">♻️<span>ขยะอัจฉริยะ</span></button>
-      <button class="module" data-module="environment">🌿<span>สิ่งแวดล้อม</span></button>
-      <button class="module" data-module="sync">🔄<span>คิวรอส่ง</span></button>
+    <section class="filters">
+      <input id="searchInput" type="search" placeholder="ค้นหา จังหวัด อำเภอ ตำบล รายละเอียด">
+      <select id="statusFilter">
+        <option value="">ทุกสถานะ</option>
+      </select>
+      <select id="needFilter">
+        <option value="">ทุกความต้องการ</option>
+      </select>
     </section>
 
-    <section class="card" id="incidentPanel">
-      <div class="step-head">
-        <h3>รายงานสถานการณ์ภาคสนาม</h3>
-        <span class="step-badge">Pilot V2.0</span>
-      </div>
-
-      <div class="wizard">
-        <button class="step active" data-step="1">1 พื้นที่</button>
-        <button class="step" data-step="2">2 GPS</button>
-        <button class="step" data-step="3">3 เหตุการณ์</button>
-        <button class="step" data-step="4">4 รูปภาพ</button>
-        <button class="step" data-step="5">5 ส่ง</button>
-      </div>
-
-      <div class="step-page active" data-page="1">
-        <div class="grid two">
-          <label>ชื่อผู้รายงาน
-            <input id="reporter" autocomplete="name" placeholder="ชื่อ-นามสกุล">
-          </label>
-          <label>เบอร์โทร
-            <input id="phone" inputmode="tel" placeholder="08xxxxxxxx">
-          </label>
-          <label>จังหวัด
-            <input id="province">
-          </label>
-          <label>อำเภอ
-            <input id="district">
-          </label>
-          <label>ตำบล
-            <input id="subdistrict">
-          </label>
-          <label>หมู่บ้าน/จุดสังเกต
-            <input id="village" placeholder="เช่น บ้านมะรุ่ย">
-          </label>
-        </div>
-      </div>
-
-      <div class="step-page" data-page="2">
-        <button type="button" id="gpsBtn" class="primary wide">📍 ใช้ตำแหน่งปัจจุบัน</button>
-        <div class="grid two">
-          <label>Latitude<input id="lat" inputmode="decimal"></label>
-          <label>Longitude<input id="lng" inputmode="decimal"></label>
-          <label>Cell ID<input id="cellId" placeholder="ถ้ามี"></label>
-          <label>ความแม่นยำ GPS<input id="accuracy" readonly placeholder="-"></label>
-        </div>
-        <p id="gpsStatus" class="hint">ยังไม่ได้อ่านตำแหน่ง</p>
-      </div>
-
-      <div class="step-page" data-page="3">
-        <div class="grid two">
-          <label>ประเภทภารกิจ
-            <select id="missionType">
-              <option value="disaster">ภัยพิบัติ</option>
-              <option value="waste">ขยะ</option>
-              <option value="environment">สิ่งแวดล้อม</option>
-            </select>
-          </label>
-          <label>ประเภทเหตุ
-            <select id="hazard">
-              <option value="flood">น้ำท่วม</option>
-              <option value="landslide">ดินถล่ม</option>
-              <option value="storm">พายุ/ลมแรง</option>
-              <option value="fire">ไฟไหม้</option>
-              <option value="waste_overflow">ขยะล้น</option>
-              <option value="illegal_dumping">ทิ้งขยะผิดกฎหมาย</option>
-              <option value="water_pollution">น้ำเสีย/มลพิษน้ำ</option>
-              <option value="air_pollution">มลพิษอากาศ</option>
-              <option value="other">อื่น ๆ</option>
-            </select>
-          </label>
-          <label>ระดับน้ำท่วม (เมตร)
-            <input id="flood" type="number" min="0" max="30" step="0.1" value="0">
-          </label>
-          <label>ความเสียหาย
-            <select id="damage">
-              <option value="none">ไม่มี</option>
-              <option value="low">เล็กน้อย</option>
-              <option value="medium">ปานกลาง</option>
-              <option value="critical">รุนแรง</option>
-              <option value="destroyed">เสียหายทั้งหมด</option>
-            </select>
-          </label>
-          <label>ความช่วยเหลือ
-            <select id="need">
-              <option value="none">ยังไม่ต้องการ</option>
-              <option value="food_water">อาหารและน้ำ</option>
-              <option value="medicine">ยา/เวชภัณฑ์</option>
-              <option value="evacuation">อพยพ</option>
-              <option value="rescue">กู้ภัย</option>
-              <option value="waste_collection">จัดเก็บขยะ</option>
-              <option value="environment_inspection">ตรวจสอบสิ่งแวดล้อม</option>
-            </select>
-          </label>
-          <label>สถานะ
-            <select id="status">
-              <option value="pending">รอตรวจสอบ</option>
-              <option value="watch">เฝ้าระวัง</option>
-              <option value="warning">เตือนภัย</option>
-              <option value="need_help">ต้องการความช่วยเหลือ</option>
-              <option value="critical">วิกฤติ</option>
-            </select>
-          </label>
-          <label>ความเร่งด่วน
-            <select id="urgency">
-              <option value="normal">ปกติ</option>
-              <option value="urgent">เร่งด่วน</option>
-              <option value="immediate">ทันที</option>
-            </select>
-          </label>
-          <label>ปริมาณขยะโดยประมาณ (กก.)
-            <input id="wasteKg" type="number" min="0" step="1" value="0">
-          </label>
-        </div>
-        <label>รายละเอียด
-          <textarea id="note" rows="4" placeholder="บอกสิ่งที่เกิดขึ้น ความต้องการ และจุดสังเกต"></textarea>
-        </label>
-      </div>
-
-      <div class="step-page" data-page="4">
-        <input id="photos" type="file" accept="image/*" capture="environment" multiple>
-        <p class="hint">ถ่ายหรือเลือกรูปได้สูงสุด 4 รูป ระบบจะลดขนาดก่อนส่ง</p>
-        <div id="previewGrid" class="preview-grid"></div>
-      </div>
-
-      <div class="step-page" data-page="5">
-        <div class="summary-box" id="summaryBox">กรอกข้อมูลแล้วกดตรวจสอบ</div>
-        <div class="actions">
-          <button type="button" id="saveDraftBtn" class="secondary">💾 เก็บร่าง</button>
-          <button type="button" id="clearBtn" class="danger-outline">ล้างข้อมูล</button>
-          <button type="button" id="submitBtn" class="primary">📤 ส่งรายงาน</button>
-        </div>
-        <div id="resultBox" class="result hidden"></div>
-      </div>
-
-      <div class="wizard-nav">
-        <button type="button" id="prevBtn" class="secondary">← ย้อนกลับ</button>
-        <button type="button" id="nextBtn" class="primary">ถัดไป →</button>
-      </div>
+    <section class="layout">
+      <div id="map" aria-label="แผนที่รายงานภาคสนาม"></div>
+      <aside id="detailPanel" class="detail-panel">
+        <h2>รายละเอียดรายงาน</h2>
+        <p class="muted">คลิกหมุดบนแผนที่หรือรายการด้านล่าง</p>
+      </aside>
     </section>
 
-    <section class="card hidden" id="queuePanel">
-      <div class="step-head">
-        <h3>คิวรอส่งและรายงานของฉัน</h3>
-        <button id="syncBtn" class="primary">Sync ตอนนี้</button>
+    <section class="table-card">
+      <div class="table-title">
+        <h2>รายการรายงานล่าสุด</h2>
+        <span id="lastUpdated" class="muted"></span>
       </div>
-      <div id="queueList" class="queue-list"></div>
-    </section>
-
-    <section class="card small">
-      <div class="section-title-row">
-        <h3>สถานะระบบ</h3>
-        <button type="button" id="healthBtn" class="link-button">ทดสอบ API</button>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>เวลา</th>
+              <th>พื้นที่</th>
+              <th>พิกัด</th>
+              <th>ความเสียหาย</th>
+              <th>ความต้องการ</th>
+              <th>สถานะ</th>
+              <th>รูป</th>
+            </tr>
+          </thead>
+          <tbody id="reportRows"></tbody>
+        </table>
       </div>
-      <pre id="healthOutput">ยังไม่ได้ทดสอบ</pre>
     </section>
   </main>
 
-  <footer>EAI Earth Alert Intelligence • EAIV4 Field Operations v2.0</footer>
-
-  <script src="config.js?v=200"></script>
-  <script src="app.js?v=200"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="config.js"></script>
+  <script src="dashboard.js"></script>
 </body>
 </html>

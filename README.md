@@ -1,20 +1,52 @@
-# EAIV4 Mobile Web App V2.0
+# EAIV4 Operations Dashboard
 
-Field Operations App สำหรับภัยพิบัติ สิ่งแวดล้อม และ Smart Waste
+แดชบอร์ดนี้อ่านข้อมูลจาก Apps Script API เดิมด้วย:
 
-## ติดตั้ง
-1. ลบไฟล์เดิมใน repository หรืออัปโหลดทับไฟล์ชื่อเดิม
-2. Upload ไฟล์ทั้งหมดในโฟลเดอร์นี้ขึ้น root ของ repository
-3. Commit: `Deploy EAIV4 Mobile Web App V2.0`
-4. GitHub Pages ใช้ branch `main` และ folder `/(root)`
-5. เปิด `https://etechtelecom-prog.github.io/EAIV4-Mobile-WebApp/?v=200`
+`?action=list&limit=500`
 
-## ทดสอบ
-- มุมขวาบนต้องขึ้น Online
-- กดทดสอบ API แล้วต้องได้ JSON
-- กด GPS และอนุญาตตำแหน่ง
-- กรอกข้อมูลและส่งรายงาน
-- ตรวจ Google Sheet ชีต `events`
+และใช้คอลัมน์ `photo_url` ในชีต `events` เพื่อแสดงจำนวนรูป ลิงก์ และภาพตัวอย่าง
 
-## หมายเหตุ
-API URL ถูกใส่ไว้ใน `config.js` แล้ว
+## การติดตั้งบน GitHub Pages
+
+1. สร้าง Repository ใหม่ เช่น `EAIV4-Dashboard`
+2. อัปโหลดไฟล์ทั้งหมดในโฟลเดอร์นี้
+3. ไปที่ Settings → Pages
+4. Source: Deploy from a branch
+5. Branch: `main` และโฟลเดอร์ `/root`
+6. เปิด URL ที่ GitHub Pages สร้างให้
+
+## จุดตรวจสอบใน Google Sheet
+
+เลื่อนไปทางขวา จะพบคอลัมน์:
+- `photo_url`
+- `device`
+
+คอลัมน์ `photo_url` จะมี URL หลายรายการ แยกด้วยการขึ้นบรรทัดใหม่
+
+## หมายเหตุเรื่องสิทธิ์รูป
+
+Code.gs เดิมเก็บรูปเป็น Private เพื่อคุ้มครองข้อมูลภาคสนาม
+
+- ผู้ใช้ที่มีสิทธิ์ใน Google Drive จะเปิดลิงก์ได้
+- ภาพตัวอย่างบน Dashboard อาจไม่แสดง หากเบราว์เซอร์ไม่ได้ล็อกอินบัญชีที่มีสิทธิ์
+- ไม่ควรตั้งไฟล์เป็น Public โดยอัตโนมัติ หากรูปมีข้อมูลบุคคลหรือข้อมูลอ่อนไหว
+
+
+## V2.2: photos_json เป็นแหล่งข้อมูลหลัก
+
+Dashboard จะอ่าน `photos_json` ก่อน ตัวอย่าง:
+
+```json
+[
+  {
+    "index": 1,
+    "name": "EAI_820702_88888_20260720_225002_01.jpg",
+    "id": "FILE_ID",
+    "thumbnail": "https://drive.google.com/thumbnail?id=FILE_ID&sz=w600",
+    "url": "https://drive.google.com/file/d/FILE_ID/view"
+  }
+]
+```
+
+ถ้าแถวเก่ายังไม่มี `photos_json` ระบบจะ fallback ไปอ่าน:
+`photo_name`, `photo_ids`, `photo_url`, `thumbnail_url` อัตโนมัติ
